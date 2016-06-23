@@ -1,0 +1,72 @@
+load_file("nrngui.hoc")
+load_file("Runcontrol.hoc")
+create soma, dend, axon
+access soma
+
+soma {
+  nseg = 1
+  diam = 18.8
+  L = 18.8
+  Ra = 123.0
+  insert Kaxon
+  gkaxon_Kaxon = 0.0319
+  insert Naaxon
+  gnaaxon_Naaxon = 0.03
+  gl_Naaxon = 5e-05
+  el_Naaxon = -70
+  insert IA
+  gkAbar_IA = 0.0165
+}
+
+dend {
+    nseg = 5
+    diam = 3.18
+    L = 701.9
+    Ra = 123
+    insert pas
+	g_pas=0.0001667
+	e_pas=-60
+}
+
+dend axon {
+    nseg = 5
+    diam = 0.1
+    L = 549.1
+    Ra = 123
+	insert Kaxon
+	gkaxon_Kaxon = 0.03
+    insert Naaxon
+	gnaaxon_Naaxon = 0.06
+	gl_Naaxon = 5e-05
+	el_Naaxon = -70
+}
+
+//forall{
+//	celsius=35
+//}
+// Connect things together
+connect dend(0), soma(0)
+connect axon(0), soma(1)
+
+// create an electrode in the soma
+
+objectvar stim
+stim = new IClamp(0.5)
+
+stim.del = 100
+stim.dur = 100
+stim.amp = 0.1
+
+tstop = 300
+
+proc initialize(){
+	finitialize(v_init)
+	fcurrent()
+}
+
+
+proc integrate(){
+	while (t<tstop){
+		fadvance()
+		}
+}

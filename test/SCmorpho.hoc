@@ -1,0 +1,97 @@
+ndend=39
+create soma,dend[ndend]
+cmspe=0.9
+Ri=150
+diameter=0.4
+access soma
+soma {
+		nseg = 1		// Number of segments = 1
+		diam = 11	// Diameter [um]
+		L = 11			// Length [um]
+		Ra = Ri		// Axial resistance [ohm-cm]
+		cm = cmspe	// Capacitance of membrane [uF/cm2]
+		
+		insert hh
+		ena=60
+		gnabar_hh=0.05
+		ek=-90
+		gkbar_hh=0.003
+		el_hh=-60
+		gl_hh=0.1e-6
+}
+dend[0] {
+		nseg = 100
+		diam = diameter
+		L = 100
+		Ra = Ri
+		cm = cmspe	
+		insert pas
+		g_pas=0.00005
+		e_pas=-70
+		//comment vgcc mechanisms out if not needed
+		insert cal cai=4e-5 cao= 2 gcalbar_cal =0.002
+		insert it2  cai=4e-5 cao= 2 eca= 100 shift_it2 = 0 gcabar_it2 = 0.0000055 qm_it2 = 2.5 qh_it2 = 2.5
+	
+	}
+	
+for n=1, 7{
+	dend[n] {
+		nseg = 33
+		diam = diameter
+		L = 33.3
+		Ra = Ri
+		cm = cmspe	
+		
+		insert pas
+		g_pas=0.00005
+		e_pas=-70
+		//comment vgcc mechanisms out if not needed
+		insert cal cai=4e-5 cao= 2 gcalbar_cal =0.002
+		insert it2  cai=4e-5 cao= 2 eca= 100 shift_it2 = 0 gcabar_it2 = 0.0000055 qm_it2 = 2.5 qh_it2 = 2.5
+	
+	}
+}
+
+for n=8, 38{
+	dend[n] {
+		nseg = 20
+		diam = diameter
+		L = 20
+		Ra = Ri
+		cm = cmspe	
+		
+		insert pas
+		g_pas=0.00005
+		e_pas=-70
+		//comment vgcc mechanisms out if not needed
+		insert cal cai=4e-5 cao= 2 gcalbar_cal =0.002
+		insert it2  cai=4e-5 cao= 2 eca= 100 shift_it2 = 0 gcabar_it2 = 0.0000055 qm_it2 = 2.5 qh_it2 = 2.5
+	
+	}
+}
+
+
+connect dend[0](0), soma(1)// no branching
+connect dend[1](0), soma(1)// 3 orders branch
+connect dend[2](0), dend[1](1)
+connect dend[3](0), dend[1](1)
+for (n=0;n<=2;n+=2){ //connect 3rd order on 3 orders branch
+	connect dend[n+4](0), dend[2+(n/2)](1)
+	connect dend[n+5](0), dend[2+(n/2)](1)
+}
+
+connect dend[8](0), soma(1)// 5 orders branch
+connect dend[9](0), dend[8](1)
+connect dend[10](0), dend[8](1)
+for (n=0;n<=2;n+=2){ //connect 3rd order on 5 orders branch
+	connect dend[n+11](0), dend[9+(n/2)](1)
+	connect dend[n+12](0), dend[9+(n/2)](1)
+}
+for (n=0;n<7;n=n+2) { // connect 4th order on 5 orders branch
+	connect dend[n+15](0), dend[11+(n/2)](1)
+	connect dend[n+16](0), dend[11+(n/2)](1)
+}
+for (n=0;n<15;n=n+2) { // connect 5th order on 5 orders branch
+	connect dend[n+23](0), dend[15+(n/2)](1)
+	connect dend[n+24](0), dend[15+(n/2)](1)
+}

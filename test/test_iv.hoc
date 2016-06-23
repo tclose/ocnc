@@ -1,0 +1,85 @@
+tstop = 300
+v_init=-70
+dt=0.02
+// Vector for injected current
+objref vecI
+vecI = new Vector()
+
+
+//==============================================================================
+objref i_step,v_step
+i_step = new Vector()// step current
+v_step = new Vector()// record somatic Vm
+deltaI=0.05 //step (nA)
+
+
+//==============================================================================	
+// CC electrode
+
+objectvar stim
+access soma
+stim = new IClamp(0.5)
+stim.del = 100
+stim.dur = 100
+
+objectvar veclist, tobj,iobj
+proc steps(){ 
+	veclist=new List()
+	tobj=new Vector()
+	for(i=-0.1; i<=0.3; i+=deltaI) {
+		iAmp = i
+		stim.amp = iAmp
+		run()
+		tobj.record(&soma.v(0.5))
+		veclist.append(tobj)
+	}
+	saveresults()
+}
+
+//==============================================================================
+//graph to plot somatic Vm
+objref graphV
+graphV = new Graph()
+graphV.exec_menu("Keep Lines")
+addplot(graphV,0) // makes graph accessible to both hoc and GUI control
+graphV.size(0,300,-120,40)
+graphV.addvar("soma.v(0.5)",1,1,0.6,0.9,2)
+
+//======================================
+// Current graph to plot i_cmd 
+objref graphI			
+graphI = new Graph(0)
+graphI.view(0, -0.15, 300, 0.5, 700, 400, 400, 300)
+// (x0, y0, width, height, window x, window y, window width, window height)
+graphI.exec_menu("Keep Lines")
+graphList[0].append(graphI)
+graphI.save_name("graphList[0].")
+graphI.addexpr("stim.i", 1, 1, 0.8, 0.9, 2)
+
+//======================================
+
+objref outfile, tempmatrix
+proc saveresults(){ local i,j,sizex, sizey
+	outfile=new File()
+	outfile.wopen("vm_steps.dat")
+	
+	tempmatrix=new Matrix()
+
+
+	sizex=veclist.o(0).size
+	sizey=veclist.count()
+	tempmatrix.resize(sizex, sizey)
+	for i=0,sizey-1{
+		tempmatrix.setcol(i,veclist.o(i))
+	}	
+	
+	tempmatrix.fprint(outfile, " %g")
+	outfile.close()
+	
+	
+
+	
+	}
+
+
+

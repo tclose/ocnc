@@ -1,0 +1,4 @@
+load_file("RunControl_iv.hoc")
+load_file("nrngui.hoc")
+load_file("stellate_scaled2.hoc")
+load_file("electrode_ic.hoc")

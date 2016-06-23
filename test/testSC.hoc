@@ -1,0 +1,62 @@
+load_file("nrngui.hoc")
+load_file("RunControl.hoc")
+create soma,dend
+cmspe=0.9
+Ri=150
+diameter=1
+access soma
+soma {
+		nseg = 1		// Number of segments = 1
+		diam = 20 // Diameter [um]
+		L = 20			// Length [um]
+		Ra = Ri		// Axial resistance [ohm-cm]
+		cm = cmspe	// Capacitance of membrane [uF/cm2]
+		insert hh
+		gnabar_hh=0.25
+		gl_hh = .0001666
+		el_hh = -60.0
+}
+dend {
+		nseg = 10
+		diam = diameter
+		L = 100
+		Ra = Ri
+		cm = cmspe	
+		insert pas
+		g_pas=0.00005
+		e_pas=-60
+	}
+	
+connect dend(0), soma(1)
+
+
+objref electrodeIC
+soma electrodeIC = new IClamp(0.5)
+
+electrodeIC.dur = 100
+electrodeIC.del=20
+electrodeIC.amp=0.5
+
+//Simulation control
+dt=0.02
+tstop=200
+v_init=-70
+celsius = 33
+proc initialize(){
+	finitialize(v_init)
+	fcurrent()
+}
+
+
+proc integrate(){
+	while (t<tstop){
+		fadvance()
+		}
+}
+
+
+proc go(){
+	initialize()
+	continuerun(tstop)
+}
+

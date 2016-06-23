@@ -1,0 +1,8 @@
+.project
+.pydevproject
+.settings
+*.pyc
+*.pdf
+*.dat
+*.c
+x86_64

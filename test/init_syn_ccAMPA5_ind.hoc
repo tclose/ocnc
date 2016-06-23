@@ -1,0 +1,38 @@
+/*--------------------------------------------------------
+procedures to insert synapses with AMPAR
+
+AMPA is modelled with the custom function syn_dblexp
+Parameters are chosen to fit quantal EPSCs (Therése's data)
+
+--------------------------------------------------------*/
+
+
+nsyn=6
+objref AMPAsyn[nsyn]
+npos1=0.5 
+npos2=0.25
+
+
+scale=1.35
+evoked=5.3
+ampa_g=0.00106
+
+access dend[15]
+for i=0,2{
+
+	AMPAsyn[i]= new syn_dblexp(npos1+0.25*i)
+	AMPAsyn[i].onset=50+300*i
+	AMPAsyn[i].gmax=ampa_g*scale*evoked
+	AMPAsyn[i].tau1=0.43
+	AMPAsyn[i].tau2=1.38
+}
+
+access dend[23]
+for i=3,5{
+
+	AMPAsyn[i]= new syn_dblexp(npos2+0.25*(i-3))
+	AMPAsyn[i].onset=950+300*(i-3)
+	AMPAsyn[i].gmax=ampa_g*scale*evoked
+	AMPAsyn[i].tau1=0.43
+	AMPAsyn[i].tau2=1.38
+}

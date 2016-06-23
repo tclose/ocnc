@@ -1,0 +1,78 @@
+// create a current-clamp electrode at the soma
+//==============================================================================
+objectvar stim
+stim = new IClamp(0.5)
+
+stim.del = 100
+stim.dur = 2
+stim.amp = 0.8
+
+//==============================================================================
+// Vectors for recording time and somatic voltage
+objref vecT, vecV
+vecT = new Vector()	// Time vector
+vecV = new Vector() // Voltage vector in soma
+
+//==============================================================================
+//graph to plot somatic Vm
+objref g
+g = new Graph()
+addplot(g,0) // makes graph accessible to both hoc and GUI control
+g.size(0,300,-80,40)
+g.addvar("soma.v(0.5)",1,1,0.6,0.9,2)
+
+
+//==============================================================================
+//simulation run
+tstop = 300
+v_init=-70
+dt=0.02
+
+
+proc initialize(){
+	finitialize(v_init)
+	fcurrent()
+}
+
+
+proc integrate(){
+	while (t<tstop){
+		fadvance()
+		}
+}
+
+//==============================================================================
+// Set recording vectors
+vecT.record(&t)				// Record t
+vecV.record(&soma.v(0.5))   // Record v at soma
+
+objref outputFile
+outputFile=new File()
+
+objref t2Vector, v2Vector
+t2Vector=new Vector()
+v2Vector=new Vector()
+
+proc save_response() {
+	index = vecT.indwhere(">", 1)
+	print "index = ", index	
+
+	t2Vector =vecT.c(index)
+	v2Vector=vecV.c(index)
+	
+	outputFile.wopen("v.dat")
+	outputFile.printf("%d\n", t2Vector.size())	
+	for i=0, t2Vector.size()-1 {
+			outputFile.printf("%g %g\n", t2Vector.x(i), v2Vector.x(i))
+		}
+	outputFile.close()
+
+
+	
+	print "Save response to file - Done."	
+}
+
+
+//======================================
+// Load Parameter Control panel
+load_file("ParameterControl.hoc")
